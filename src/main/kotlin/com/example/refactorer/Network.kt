@@ -30,7 +30,7 @@ interface OpenAiService {
     suspend fun getRefactoringSuggestion(@Body data: APIRequest): APIResponse
 }
 
-fun createOpenAiService(): OpenAiService {
+private fun createOpenAiService(): OpenAiService {
     val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -38,5 +38,7 @@ fun createOpenAiService(): OpenAiService {
 
     return retrofit.create(OpenAiService::class.java)
 }
+
+val openAiService by lazy { createOpenAiService() }
 
 private const val BASE_URL = "https://api.openai.com/v1/"

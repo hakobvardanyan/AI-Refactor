@@ -4,12 +4,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.SelectionModel
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
-import com.intellij.psi.PsiDocumentManager
-import com.intellij.psi.util.PsiTreeUtil
 import kotlinx.coroutines.*
 
 class RefactorAction : AnAction() {
@@ -23,18 +18,14 @@ class RefactorAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         refactorJob?.cancel()
-        val project: Project? = e.project
-        val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
-        if (project == null || editor == null) return
 
-        val selectionModel: SelectionModel = editor.selectionModel
-        val selectedText: String? = selectionModel.selectedText
+        val selectedText: String? = e.getData(CommonDataKeys.EDITOR)?.selectionModel?.selectedText
 
         if (!selectedText.isNullOrBlank()) {
 
             refactorJob = scope.launch {
                 val suggestion = withContext(Dispatchers.IO) {
-                    createOpenAiService().getRefactoringSuggestion(
+                    openAiService.getRefactoringSuggestion(
                         APIRequest(kotlinCode = "Pretend you are staff kotlin engineer and suggest refactoring on this code below \n$selectedText")
                     )
                 }
