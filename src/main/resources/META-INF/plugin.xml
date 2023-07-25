@@ -13,7 +13,7 @@
             <action
                     id="com.example.refactorer.SuggestionAction"
                     class="com.example.refactorer.SuggestionAction"
-                    text="Provide Refactoring"
+                    text="Provide Suggestions"
                     description="Suggest refactoring for a selected a piece of code"/>
             <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last" />
         </group>

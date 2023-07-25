@@ -9,7 +9,8 @@ import retrofit2.http.POST
 
 data class APIRequest(
     @SerializedName("messages") val messages: List<RequestMessage>,
-    @SerializedName("model") val model: String = "gpt-3.5-turbo",
+    @SerializedName("model") val model: String = "gpt-3.5-turbo-16k",
+    @SerializedName("max_tokens") val maxTokens: Int = 2048,
     @SerializedName("temperature") val temperature: Double = 0.0
 )
 
