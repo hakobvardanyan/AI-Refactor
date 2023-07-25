@@ -12,7 +12,7 @@ class ScrollableContent : JComponent() {
         textArea.wrapStyleWord = true // Wrap at word boundaries
 
         // Add some sample text
-        val sampleText = "Click on the Run Refactoring Assistant to get suggestions"
+        val sampleText = "Select piece of code then open the \"Context Menu\" and click on the \"AI Refactor\" then chose the \"Provide Refactoring\" to get suggestions"
         textArea.text = sampleText
 
         // Create a JScrollPane and add the JTextArea to it

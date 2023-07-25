@@ -2,8 +2,9 @@
 <idea-plugin>
     <actions>
         <group
-                id="MyDemoActionGroup"
-                description="Demo action group">
+                id="org.intellij.sdk.action.GroupedActions"
+                text="AI Refactor"
+                popup="true">
             <action
                     id="com.example.refactorer.ImproveAction"
                     class="com.example.refactorer.ImproveAction"
@@ -14,7 +15,7 @@
                     class="com.example.refactorer.SuggestionAction"
                     text="Provide Refactoring"
                     description="Suggest refactoring for a selected a piece of code"/>
-            <add-to-group group-id="EditorPopupMenu" anchor="first" />
+            <add-to-group group-id="EditorPopupMenu1.FindRefactor" anchor="last" />
         </group>
     </actions>
 
