@@ -4,10 +4,9 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import kotlinx.coroutines.*
-import javax.swing.JPanel
-import javax.swing.JTextArea
 
 class RefactorAction : AnAction() {
 
@@ -25,23 +24,30 @@ class RefactorAction : AnAction() {
             val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Refactoring Assistance")
             toolWindow?.show(null) // Pass the anchor or null to show as floating window
 
-            e.getData(CommonDataKeys.EDITOR)?.selectionModel?.selectedText
-                ?.takeIf { it.isNotBlank() }
-                ?.let { text ->
-                    refactorJob = scope.launch {
-                        val suggestions = withContext(Dispatchers.IO) { getRefactoringSuggestion(text) }
+            getSelectedText(e)?.let { text ->
+                refactorJob = scope.launch {
+                    val suggestions = withContext(Dispatchers.IO) { getRefactoringSuggestion(text) }
 
-                        toolWindow?.contentManager?.getContent(0)?.component?.let { panel ->
-                            if (panel is JPanel) {
-                                val codeArea = panel.components.firstOrNull { it is JTextArea } as JTextArea?
-                                codeArea?.text = suggestions.firstOrNull()?.message?.content ?: "Can't suggest anything!"
-                            }
-                        }
-                    }
+                    getContent(toolWindow).setText(
+                        suggestions.firstOrNull()?.message?.content ?: "Can't suggest anything!"
+                    )
                 }
+            }
         }
     }
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
+    private fun getContent(toolWindow: ToolWindow?) = toolWindow?.contentManager?.contents
+        ?.find {
+            it.component is ScrollableContent
+        }?.component as ScrollableContent
+
+    private fun getSelectedText(e: AnActionEvent) = e.getData(CommonDataKeys.EDITOR)
+        ?.selectionModel
+        ?.selectedText
+        ?.takeIf {
+            it.isNotBlank()
+        }
 
 }
