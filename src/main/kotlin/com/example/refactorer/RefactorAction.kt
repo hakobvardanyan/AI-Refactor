@@ -23,12 +23,14 @@ class RefactorAction : AnAction() {
         e.project?.let { project ->
             val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Refactoring Assistance")
             toolWindow?.show(null) // Pass the anchor or null to show as floating window
+            val content = getContent(toolWindow)
 
             getSelectedText(e)?.let { text ->
                 refactorJob = scope.launch {
+                    content.setText("Requesting assistance from ChatGPT...")
                     val suggestions = withContext(Dispatchers.IO) { getRefactoringSuggestion(text) }
 
-                    getContent(toolWindow).setText(
+                    content.setText(
                         suggestions.firstOrNull()?.message?.content ?: "Can't suggest anything!"
                     )
                 }

@@ -8,12 +8,11 @@ class ScrollableContent : JComponent() {
     private val textArea: JTextArea = JTextArea()
 
     init {
-        // Create a JTextArea to display the text
         textArea.lineWrap = true // Enable word wrap
         textArea.wrapStyleWord = true // Wrap at word boundaries
 
         // Add some sample text
-        val sampleText = "Waiting for response"
+        val sampleText = "Click on the Run Refactoring Assistant to get suggestions"
         textArea.text = sampleText
 
         // Create a JScrollPane and add the JTextArea to it
