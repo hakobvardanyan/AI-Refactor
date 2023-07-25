@@ -8,9 +8,14 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class APIRequest(
-    @SerializedName("prompt") val kotlinCode: String,
-    @SerializedName("max_tokens") val maxTokens: Int = 150,
+    @SerializedName("messages") val messages: List<RequestMessage>,
+    @SerializedName("model") val model: String = "gpt-3.5-turbo",
     @SerializedName("temperature") val temperature: Double = 0.0
+)
+
+data class RequestMessage(
+    @SerializedName("role") val role: String = "user",
+    @SerializedName("content") val content: String,
 )
 
 data class APIResponse(
@@ -18,7 +23,12 @@ data class APIResponse(
 )
 
 data class Choice(
-    @SerializedName("text") val text: String
+    @SerializedName("message") val message: ResponseMessage
+)
+
+data class ResponseMessage(
+    @SerializedName("role") val role: String,
+    @SerializedName("content") val content: String
 )
 
 interface OpenAiService {
@@ -26,7 +36,7 @@ interface OpenAiService {
         "Content-Type: application/json",
         "Authorization: Bearer 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"
     )
-    @POST("engines/davinci/completions")
+    @POST("chat/completions")
     suspend fun getRefactoringSuggestion(@Body data: APIRequest): APIResponse
 }
 

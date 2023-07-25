@@ -35,14 +35,14 @@ class RefactorAction : AnAction() {
             refactorJob = scope.launch {
                 val suggestion = withContext(Dispatchers.IO) {
                     createOpenAiService().getRefactoringSuggestion(
-                        APIRequest(kotlinCode = "Pretend you are staff kotlin engineer and suggest refactoring on this code below \n$selectedText")
+                        APIRequest(messages = listOf(RequestMessage(content = "Pretend you are senior engineer, please suggest a good alternative for the following code without any fairy tales: \n$selectedText")))
                     )
                 }
                 Messages.showMessageDialog(
                     e.project,
-                    suggestion.choices.joinToString(" "),
+                    suggestion.choices.firstOrNull()?.message?.content ?: "Can't suggest anything!",
                     "Suggested Refactoring",
-                    Messages.getInformationIcon());
+                    Messages.getInformationIcon())
             }
 
         }
