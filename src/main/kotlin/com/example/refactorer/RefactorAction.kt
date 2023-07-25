@@ -4,8 +4,10 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.wm.ToolWindowManager
 import kotlinx.coroutines.*
+import javax.swing.JPanel
+import javax.swing.JTextArea
 
 class RefactorAction : AnAction() {
 
@@ -19,28 +21,27 @@ class RefactorAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         refactorJob?.cancel()
 
-        val selectedText: String? = e.getData(CommonDataKeys.EDITOR)?.selectionModel?.selectedText
+        e.project?.let { project ->
+            val toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Refactoring Assistance")
+            toolWindow?.show(null) // Pass the anchor or null to show as floating window
 
-        if (!selectedText.isNullOrBlank()) {
+            e.getData(CommonDataKeys.EDITOR)?.selectionModel?.selectedText
+                ?.takeIf { it.isNotBlank() }
+                ?.let { text ->
+                    refactorJob = scope.launch {
+                        val suggestions = withContext(Dispatchers.IO) { getRefactoringSuggestion(text) }
 
-            refactorJob = scope.launch {
-                val suggestion = withContext(Dispatchers.IO) {
-                    createOpenAiService().getRefactoringSuggestion(
-                        APIRequest(messages = listOf(RequestMessage(content = "Pretend you are senior engineer, please suggest a good alternative for the following code without any fairy tales: \n$selectedText")))
-                    )
+                        toolWindow?.contentManager?.getContent(0)?.component?.let { panel ->
+                            if (panel is JPanel) {
+                                val codeArea = panel.components.firstOrNull { it is JTextArea } as JTextArea?
+                                codeArea?.text = suggestions.firstOrNull()?.message?.content ?: "Can't suggest anything!"
+                            }
+                        }
+                    }
                 }
-                Messages.showMessageDialog(
-                    e.project,
-                    suggestion.choices.firstOrNull()?.message?.content ?: "Can't suggest anything!",
-                    "Suggested Refactoring",
-                    Messages.getInformationIcon())
-            }
-
         }
-
     }
 
-    override fun getActionUpdateThread(): ActionUpdateThread {
-        return ActionUpdateThread.BGT
-    }
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
+
 }

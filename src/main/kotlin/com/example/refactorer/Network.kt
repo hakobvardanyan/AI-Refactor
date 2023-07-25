@@ -49,6 +49,16 @@ private fun createOpenAiService(): OpenAiService {
     return retrofit.create(OpenAiService::class.java)
 }
 
-val openAiService by lazy { createOpenAiService() }
+suspend fun getRefactoringSuggestion(selectedText: String): List<Choice> = openAiService.getRefactoringSuggestion(
+    APIRequest(
+        messages = listOf(
+            RequestMessage(
+                content = "Pretend you are senior engineer, please suggest a good alternative for the following code without any fairy tales: \n$selectedText"
+            )
+        )
+    )
+).choices
+
+private val openAiService by lazy { createOpenAiService() }
 
 private const val BASE_URL = "https://api.openai.com/v1/"
