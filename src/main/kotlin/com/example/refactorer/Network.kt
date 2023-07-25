@@ -37,7 +37,7 @@ interface OpenAiService {
         "Authorization: Bearer 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"
     )
     @POST("chat/completions")
-    suspend fun getRefactoringSuggestion(@Body data: APIRequest): APIResponse
+    suspend fun request(@Body data: APIRequest): APIResponse
 }
 
 private fun createOpenAiService(): OpenAiService {
@@ -49,11 +49,21 @@ private fun createOpenAiService(): OpenAiService {
     return retrofit.create(OpenAiService::class.java)
 }
 
-suspend fun getRefactoringSuggestion(selectedText: String): List<Choice> = openAiService.getRefactoringSuggestion(
+suspend fun requestCodeImprovement(selectedText: String): List<Choice> = openAiService.request(
     APIRequest(
         messages = listOf(
             RequestMessage(
-                content = "Pretend you are senior engineer, please suggest a good alternative for the following code without any fairy tales: \n$selectedText"
+                content = "Pretend you are a senior engineer and suggest an improved alternative for the following code, but provide only full version code as plain text without code block syntax around it and any placeholders or ellipses: \n$selectedText"
+            )
+        )
+    )
+).choices
+
+suspend fun requestCodeSuggestionAndExplanation(selectedText: String): List<Choice> = openAiService.request(
+    APIRequest(
+        messages = listOf(
+            RequestMessage(
+                content = "Pretend you are a senior engineer and suggest an improved alternative for the following code providing only the code block and brief explanation of it: \n$selectedText"
             )
         )
     )

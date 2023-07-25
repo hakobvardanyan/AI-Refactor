@@ -5,10 +5,15 @@
                 id="MyDemoActionGroup"
                 description="Demo action group">
             <action
-                    id="com.example.refactorer.RefactorAction"
-                    class="com.example.refactorer.RefactorAction"
-                    text="Run Refactor Assistant"
-                    description="Suggesting refactoring for a selected a piece of code"/>
+                    id="com.example.refactorer.ImproveAction"
+                    class="com.example.refactorer.ImproveAction"
+                    text="Improve Code"
+                    description="Suggest improved version for a selected a piece of code"/>
+            <action
+                    id="com.example.refactorer.SuggestionAction"
+                    class="com.example.refactorer.SuggestionAction"
+                    text="Provide Refactoring"
+                    description="Suggest refactoring for a selected a piece of code"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first" />
         </group>
     </actions>

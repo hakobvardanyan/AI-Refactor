@@ -8,7 +8,7 @@ import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowManager
 import kotlinx.coroutines.*
 
-class RefactorAction : AnAction() {
+class SuggestionAction : AnAction() {
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var refactorJob: Job? = null
@@ -28,7 +28,7 @@ class RefactorAction : AnAction() {
             getSelectedText(e)?.let { text ->
                 refactorJob = scope.launch {
                     content.setText("Requesting assistance from ChatGPT...")
-                    val suggestions = withContext(Dispatchers.IO) { getRefactoringSuggestion(text) }
+                    val suggestions = withContext(Dispatchers.IO) { requestCodeSuggestionAndExplanation(text) }
 
                     content.setText(
                         suggestions.firstOrNull()?.message?.content ?: "Can't suggest anything!"
@@ -51,5 +51,6 @@ class RefactorAction : AnAction() {
         ?.takeIf {
             it.isNotBlank()
         }
+
 
 }
