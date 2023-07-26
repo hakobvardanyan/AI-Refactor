@@ -35,7 +35,7 @@ data class ResponseMessage(
 interface OpenAiService {
     @Headers(
         "Content-Type: application/json",
-        "Authorization: Bearer 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"
+        "Authorization: Bearer YOUR_API_KEY"
     )
     @POST("chat/completions")
     suspend fun request(@Body data: APIRequest): APIResponse
