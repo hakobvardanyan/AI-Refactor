@@ -13,10 +13,6 @@ class SuggestionAction : AnAction() {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var refactorJob: Job? = null
 
-    override fun update(e: AnActionEvent) {
-        super.update(e)
-    }
-
     override fun actionPerformed(e: AnActionEvent) {
         refactorJob?.cancel()
 
@@ -41,16 +37,11 @@ class SuggestionAction : AnAction() {
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     private fun getContent(toolWindow: ToolWindow?) = toolWindow?.contentManager?.contents
-        ?.find {
-            it.component is ScrollableContent
-        }?.component as ScrollableContent
+        ?.find { it.component is ScrollableContent }
+        ?.component as ScrollableContent
 
     private fun getSelectedText(e: AnActionEvent) = e.getData(CommonDataKeys.EDITOR)
         ?.selectionModel
         ?.selectedText
-        ?.takeIf {
-            it.isNotBlank()
-        }
-
-
+        ?.takeIf { it.isNotBlank() }
 }
